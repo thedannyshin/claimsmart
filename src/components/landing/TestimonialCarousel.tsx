@@ -1,4 +1,4 @@
-import { useState, type SVGProps } from "react";
+import { useEffect, useRef, useState, type SVGProps } from "react";
 import { TESTIMONIALS } from "../../data/testimonials";
 import { HOVER_NEUTRAL, LANDING_H2, LANDING_H4, LANDING_LABEL, LANDING_QUOTE, LANDING_SMALL, UI_ENTER } from "../../lib/ui";
 import { LandingCell, LandingGrid, LandingGridCell, LandingRow } from "./LandingLayout";
@@ -21,12 +21,23 @@ function IconChevronRight(props: SVGProps<SVGSVGElement>) {
 
 export function TestimonialCarousel() {
   const [index, setIndex] = useState(0);
+  const animateSlides = useRef(false);
   const total = TESTIMONIALS.length;
   const current = TESTIMONIALS[index];
 
+  useEffect(() => {
+    TESTIMONIALS.forEach((testimonial) => {
+      const img = new Image();
+      img.src = testimonial.avatarSrc;
+    });
+  }, []);
+
   const goTo = (next: number) => {
+    animateSlides.current = true;
     setIndex((next + total) % total);
   };
+
+  const slideEnter = animateSlides.current ? UI_ENTER : "";
 
   return (
     <>
@@ -39,14 +50,14 @@ export function TestimonialCarousel() {
         </LandingCell>
       </LandingRow>
 
-      <LandingGrid cols={2} className="landing-scroll-split divide-border-contrast sm:grid-cols-[minmax(0,1fr)_auto]">
+      <LandingGrid cols={2} className="testimonial-grid divide-border-contrast">
         <LandingGridCell className="flex min-h-[22rem] flex-col justify-between sm:min-h-[26rem] lg:min-h-[28rem]">
-          <div className="landing-scroll-inner flex h-full flex-col justify-between">
-            <blockquote key={current.id} className={`max-w-prose ${LANDING_QUOTE} ${UI_ENTER}`}>
+          <div className="flex h-full flex-col justify-between">
+            <blockquote key={current.id} className={`max-w-prose ${LANDING_QUOTE} ${slideEnter}`}>
               &ldquo;{current.quote}&rdquo;
             </blockquote>
 
-            <div key={`${current.id}-meta`} className={UI_ENTER}>
+            <div key={`${current.id}-meta`} className={slideEnter}>
               <p className={LANDING_H4}>{current.name}</p>
               <p className={`mt-1 ${LANDING_SMALL}`}>{current.detail}</p>
 
@@ -76,7 +87,10 @@ export function TestimonialCarousel() {
                       role="tab"
                       aria-selected={i === index}
                       aria-label={`Testimonial from ${t.name}`}
-                      onClick={() => setIndex(i)}
+                      onClick={() => {
+                        animateSlides.current = true;
+                        setIndex(i);
+                      }}
                       className={`pressable h-2 w-2 rounded-full transition-all duration-300 ease-out ${
                         i === index ? "w-6 landing-contrast-dot-active" : `landing-contrast-dot ${HOVER_NEUTRAL}`
                       }`}
@@ -88,15 +102,17 @@ export function TestimonialCarousel() {
           </div>
         </LandingGridCell>
 
-        <LandingGridCell className="!p-0 sm:w-auto">
-          <div className="landing-scroll-inner testimonial-headshot-panel">
-            <div key={current.id} className={`testimonial-headshot-square ${UI_ENTER}`}>
+        <LandingGridCell className="!p-0">
+          <div className="testimonial-headshot-panel">
+            <div key={current.id} className={`testimonial-headshot-square ${slideEnter}`}>
               <img
-                key={current.id}
                 src={current.avatarSrc}
                 alt={current.avatarAlt}
                 className="testimonial-headshot h-full w-full object-cover object-[center_20%]"
-                loading="lazy"
+                width={448}
+                height={448}
+                decoding="async"
+                fetchPriority="high"
               />
             </div>
           </div>
