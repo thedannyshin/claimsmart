@@ -219,7 +219,6 @@ export function HeroAbstractBackground({ className = "" }: HeroAbstractBackgroun
     };
 
     const draw = (now: number) => {
-      resize();
       const elapsed = reducedMotion ? 0 : (now - start) * 0.001;
 
       gl.useProgram(program);
@@ -237,12 +236,28 @@ export function HeroAbstractBackground({ className = "" }: HeroAbstractBackgroun
     const container = canvas.parentElement;
     if (container) observer.observe(container);
     else observer.observe(canvas);
+
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (reducedMotion) return;
+        if (entry.isIntersecting) {
+          if (!raf) raf = requestAnimationFrame(draw);
+        } else {
+          cancelAnimationFrame(raf);
+          raf = 0;
+        }
+      },
+      { rootMargin: "100px 0px" }
+    );
+    visibilityObserver.observe(canvas);
+
     resize();
     raf = requestAnimationFrame(draw);
 
     return () => {
       cancelAnimationFrame(raf);
       observer.disconnect();
+      visibilityObserver.disconnect();
       gl.deleteProgram(program);
       gl.deleteShader(vs);
       gl.deleteShader(fs);

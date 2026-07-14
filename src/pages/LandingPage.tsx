@@ -194,12 +194,12 @@ export function LandingPage() {
         <LandingFrame id="how-it-works">
           <LandingRow>
             <LandingCell>
-              <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-                <div className="landing-scroll-reveal">
+              <div className="landing-scroll-reveal flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+                <div>
                   <p className={LANDING_LABEL}>How it works</p>
                   <h2 className={`mt-6 max-w-2xl ${LANDING_H2}`}>Three steps to get started</h2>
                 </div>
-                <Link to="/login" className={`${LANDING_BTN_PRIMARY} landing-scroll-reveal shrink-0`}>
+                <Link to="/login" className={`${LANDING_BTN_PRIMARY} shrink-0`}>
                   {LANDING_CTA}
                 </Link>
               </div>

@@ -57,7 +57,8 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  /* Smooth scroll fights GSAP ScrollTrigger and causes jank on wheel scroll */
+  scroll-behavior: auto;
 }
 
 body {
